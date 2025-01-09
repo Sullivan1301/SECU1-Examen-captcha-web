@@ -1,7 +1,14 @@
 // Charger l'API_KEY depuis les variables d'environnement
-const apiKey = '<%= process.env.API_KEY %>';
+const apiKey = process.env.API_KEY;
 const wafUrl = "https://api.prod.jcloudify.com/whoami";
 
+// Vérifier que l'API_KEY est bien définie
+if (!apiKey) {
+    console.error('API_KEY non définie');
+    alert("Erreur : API_KEY non définie. Veuillez contacter l'administrateur.");
+}
+
+// Gestion du formulaire
 document.getElementById('numberForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const maxRequests = parseInt(document.getElementById('numberInput').value, 10);
@@ -17,9 +24,11 @@ document.getElementById('numberForm').addEventListener('submit', function (event
     const outputDiv = document.getElementById('output');
     outputDiv.style.display = 'block';
 
+    // Lancer la séquence
     runSequence(maxRequests, outputDiv);
 });
 
+// Gestion du bouton "Recommencer"
 document.getElementById('resetButton').addEventListener('click', function () {
     // Réinitialiser l'interface
     document.getElementById('numberForm').style.display = 'block';
@@ -28,6 +37,7 @@ document.getElementById('resetButton').addEventListener('click', function () {
     document.getElementById('resetButton').style.display = 'none';
 });
 
+// Fonction pour effectuer une requête avec CAPTCHA
 async function fetchWithCaptcha(index, tempLine) {
     try {
         const response = await fetch(wafUrl);
@@ -48,6 +58,7 @@ async function fetchWithCaptcha(index, tempLine) {
     }
 }
 
+// Fonction pour afficher le CAPTCHA
 async function showCaptcha(tempLine, index) {
     return new Promise((resolve) => {
         const container = document.getElementById("captcha-container");
@@ -65,6 +76,15 @@ async function showCaptcha(tempLine, index) {
             return;
         }
 
+        // Vérifier que l'API_KEY est définie
+        if (!apiKey) {
+            console.error('API_KEY non définie');
+            updateOutputLine(tempLine, `${index}. Erreur : API_KEY non définie`);
+            resolve(false);
+            return;
+        }
+
+        // Afficher le CAPTCHA
         AwsWafCaptcha.renderCaptcha(container, {
             apiKey: apiKey,
             onSuccess: (wafToken) => {
@@ -81,6 +101,7 @@ async function showCaptcha(tempLine, index) {
     });
 }
 
+// Fonction pour résoudre le CAPTCHA
 async function resolveCaptcha(wafToken, tempLine, index, resolve) {
     try {
         const response = await fetch(wafUrl, {
@@ -104,6 +125,7 @@ async function resolveCaptcha(wafToken, tempLine, index, resolve) {
     }
 }
 
+// Fonction pour exécuter la séquence
 async function runSequence(maxRequests, outputDiv) {
     outputDiv.innerHTML = ''; // Réinitialiser la sortie
     for (let i = 1; i <= maxRequests; i++) {
@@ -122,6 +144,7 @@ async function runSequence(maxRequests, outputDiv) {
     document.getElementById('resetButton').style.display = 'block';
 }
 
+// Fonction pour ajouter une ligne de sortie
 function addOutputLine(container, text) {
     const line = document.createElement('div');
     line.textContent = text;
@@ -135,10 +158,12 @@ function addOutputLine(container, text) {
     return line;
 }
 
+// Fonction pour mettre à jour une ligne de sortie
 function updateOutputLine(line, text) {
     line.textContent = text;
 }
 
+// Fonction pour attendre un délai
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
