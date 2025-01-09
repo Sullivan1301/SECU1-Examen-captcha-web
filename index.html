@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECU1 - Examen Captcha Web</title>
-    <!-- Script du CAPTCHA -->
     <script type="text/javascript" src="https://09bd26e5e726.eu-west-3.captcha-sdk.awswaf.com/09bd26e5e726/jsapi.js" defer></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
@@ -77,6 +76,7 @@
             } else if (response.status === 405) {
                 return await showCaptcha(tempLine, index);
             } else {
+                console.error('Erreur de requête :', response.status, response.statusText);
                 updateOutputLine(tempLine, `${index}. Erreur serveur (${response.status})`);
                 return false;
             }
@@ -133,18 +133,25 @@
     // Fonction pour résoudre le CAPTCHA
     async function resolveCaptcha(wafToken, tempLine, index, resolve) {
         try {
+            console.log('Token CAPTCHA:', wafToken); // Afficher le token CAPTCHA
+
             const response = await fetch(wafUrl, {
                 method: "POST",
                 headers: {
                     'Authorization': `Bearer ${wafToken}`,
-                }
+                    'Content-Type': 'application/json', // Si nécessaire
+                },
+                body: JSON.stringify({ key: 'value' }), // Si nécessaire
             });
+
+            console.log('Réponse de l\'API:', response); // Afficher la réponse de l'API
 
             if (response.ok) {
                 updateOutputLine(tempLine, `${index}. Forbidden`);
                 resolve(true);
             } else {
-                updateOutputLine(tempLine, `${index}. Échec de la validation CAPTCHA`);
+                console.error('Erreur de requête :', response.status, response.statusText);
+                updateOutputLine(tempLine, `${index}. Échec de la validation CAPTCHA (${response.status})`);
                 resolve(false);
             }
         } catch (error) {
@@ -166,7 +173,7 @@
                 break;
             }
 
-            await delay(1000); // Attendre 1 seconde avant de continuer
+            await delay(2000); // Attendre 2 secondes avant de continuer
         }
 
         // Afficher le bouton de réinitialisation
