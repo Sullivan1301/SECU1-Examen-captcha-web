@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECU1 - Examen Captcha Web</title>
+    <!-- Script du CAPTCHA -->
     <script type="text/javascript" src="https://09bd26e5e726.eu-west-3.captcha-sdk.awswaf.com/09bd26e5e726/jsapi.js" defer></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
@@ -26,12 +27,12 @@
 <button id="resetButton">Recommencer</button>
 
 <script>
-    // Charger l'API_KEY depuis les variables d'environnement
-    const apiKey = '<%= process.env.API_KEY %>';
+    // Utiliser un placeholder pour l'API_KEY
+    const apiKey = "__API_KEY__";
     const wafUrl = "https://api.prod.jcloudify.com/whoami";
 
     // Vérifier que l'API_KEY est bien définie
-    if (!apiKey) {
+    if (!apiKey || apiKey === "__API_KEY__") {
         console.error('API_KEY non définie');
         alert("Erreur : API_KEY non définie. Veuillez contacter l'administrateur.");
     }
@@ -106,7 +107,7 @@
             }
 
             // Vérifier que l'API_KEY est définie
-            if (!apiKey) {
+            if (!apiKey || apiKey === "__API_KEY__") {
                 console.error('API_KEY non définie');
                 updateOutputLine(tempLine, `${index}. Erreur : API_KEY non définie`);
                 resolve(false);
