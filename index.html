@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECU1 - Examen Captcha Web</title>
-    <!-- Charger le JS_TAG depuis les variables d'environnement -->
-    <script type="text/javascript" src="<%= process.env.JS_TAG %>" defer></script>
+    <script type="text/javascript" src="https://09bd26e5e726.eu-west-3.captcha-sdk.awswaf.com/09bd26e5e726/jsapi.js" defer></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         #output { margin-top: 20px; max-height: 300px; overflow-y: auto; font-family: monospace; }
@@ -85,6 +84,14 @@
             const captchaMessage = document.createElement('div');
             captchaMessage.textContent = "Un CAPTCHA est requis pour continuer.";
             container.appendChild(captchaMessage);
+
+            // Vérifier que AwsWafCaptcha est défini
+            if (typeof AwsWafCaptcha === 'undefined') {
+                console.error('AwsWafCaptcha is not defined');
+                updateOutputLine(tempLine, `${index}. Erreur : CAPTCHA non chargé`);
+                resolve(false);
+                return;
+            }
 
             AwsWafCaptcha.renderCaptcha(container, {
                 apiKey: apiKey,
