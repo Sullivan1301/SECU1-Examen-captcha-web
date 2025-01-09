@@ -28,11 +28,11 @@
 
 <script>
     // Utiliser un placeholder pour l'API_KEY
-    const apiKey = "__API_KEY__";
+    const apiKey = "";
     const wafUrl = "https://api.prod.jcloudify.com/whoami";
 
     // Vérifier que l'API_KEY est bien définie
-    if (!apiKey || apiKey === "__API_KEY__") {
+    if (!apiKey || apiKey === "") {
         console.error('API_KEY non définie');
         alert("Erreur : API_KEY non définie. Veuillez contacter l'administrateur.");
     }
@@ -107,7 +107,7 @@
             }
 
             // Vérifier que l'API_KEY est définie
-            if (!apiKey || apiKey === "__API_KEY__") {
+            if (!apiKey || apiKey === "") {
                 console.error('API_KEY non définie');
                 updateOutputLine(tempLine, `${index}. Erreur : API_KEY non définie`);
                 resolve(false);
